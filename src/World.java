@@ -36,7 +36,7 @@ public class World {
     public void adjustZoom(double amt) {
         double newzoom = zoom + amt;
 
-        if (newzoom + location[0] <= MAX_P && newzoom + location[1] <= MAX_P)
+        if (newzoom + location[0] <= MAX_P && newzoom + location[1] <= MAX_P && newzoom >= 1.0)
             zoom = newzoom;
     }
 
@@ -112,6 +112,7 @@ public class World {
         rectangle(x1,y1,x2,y2);
     }
 
+    // draw basic rectangle given opposing corners
     private static void rectangle(double x1,double y1,double x2,double y2) {
         glBegin(GL_QUADS);
         {

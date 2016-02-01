@@ -15,6 +15,8 @@ public class Window implements Runnable {
     private double unitsX; // units in horizontile projection space
     private double unitsY; // units in vertical projection space
     private World world = new World();
+    private GLFWCursorPosCallback cbCurPos;
+    private GLFWScrollCallback cbCurScroll;
 
     private static final double DIM = 2;
     private static final int DEFAULT_WIDTH = 640;
@@ -27,14 +29,21 @@ public class Window implements Runnable {
         }
         queryWindowDims();
 
-        GLFWCursorPosCallback cbCurPos = new GLFWCursorPosCallback() {
+        cbCurPos = new GLFWCursorPosCallback() {
                 @Override
                 public void invoke(long window,double cx,double cy) {
                     onWindowPosChange(window,cx,cy);                    
                 }
             };
-
         glfwSetCursorPosCallback(windowId,cbCurPos);
+
+        cbCurScroll = new GLFWScrollCallback() {
+                @Override
+                public void invoke(long window,double xoffset,double yoffset) {
+                    onMouseScroll(window,xoffset,yoffset);
+                }
+            };
+        glfwSetScrollCallback(windowId,cbCurScroll);
     }
 
     // main drawing loop: assume this is called uniquely per each
@@ -98,5 +107,11 @@ public class Window implements Runnable {
             lastX = -1;
             lastY = -1;
         }
+    }
+
+    private void onMouseScroll(long window,double xoffset,double yoffset) {
+        // negate offset so negative scrolls scroll out; this is
+        // simply a preference
+        world.adjustZoom(-yoffset);
     }
 }

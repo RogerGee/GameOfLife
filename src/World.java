@@ -10,6 +10,7 @@ public class World {
     private double zoom = 10.0; // units in X/Y (i.e. radius) from view location
     private double location[] = {0.0,0.0}; // view location
     private ArrayList<BitSet> grid;
+    private ArrayList<BitSet> tmpGrid;
 
     private static final int DIM = 512;
     private static final double HALF_DIM = DIM / 2.0;
@@ -22,13 +23,19 @@ public class World {
         // create default world size with DIMxDIM cells
         int bcount = DIM/8;
         grid = new ArrayList<BitSet>();
+        tmpGrid = new ArrayList<BitSet>();
         for (int i = 0;i < DIM;++i) {
             // randomly generate a row of cells
             byte[] rbytes = new byte[bcount];
             rnd.nextBytes(rbytes);
             if (rbytes[3] >= 0)
                 rbytes[3] = (byte)~rbytes[bcount-1];
-            grid.add(BitSet.valueOf(rbytes));
+
+            // create row from random data; create a copy in the
+            // temporary grid
+            BitSet bs = BitSet.valueOf(rbytes);
+            grid.add(bs);
+            tmpGrid.add((BitSet)bs.clone());
         }
     }
 
@@ -100,6 +107,42 @@ public class World {
                 cx += 1.0;
             }
             cy += 1.0;
+        }
+    }
+
+    // step through an instance of the Game of Life
+    public void playGame() {
+        boolean[] state = new boolean[9];
+
+        for (int i = 0;i < DIM;++i) {
+            BitSet curRow = grid.get(i);
+            for (int j = 0;j < DIM;++j) {
+                // copy state from temporary grid for single cell;
+                // treat invalid positions as dead
+                BitSet a = i > 1 ? tmpGrid.get(i-1) : null;
+                BitSet b = tmpGrid.get(i);
+                BitSet c = i+1 < DIM ? tmpGrid.get(i+1) : null;
+                state[0] = j > 1 && a != null && a.get(j-1);
+                state[1] = a != null && a.get(j);
+                state[2] = j+1 < DIM && a != null && a.get(j+1);
+                state[3] = j > 1 && b.get(j-1);
+                state[4] = b.get(j);
+                state[5] = j+1 < DIM && b.get(j+1);
+                state[6] = j > 1 && c != null && c.get(j-1);
+                state[7] = c != null && c.get(j);
+                state[8] = j+1 < DIM && c != null && c.get(j+1);
+
+                // replace cell with new value from game step
+                curRow.set(j,GameOfLife.gameStep(state));
+            }
+        }
+
+        // copy grid into temporary grid
+        for (int i = 0;i < DIM;++i) {
+            BitSet bs = tmpGrid.get(i);
+
+            bs.clear();
+            bs.or(grid.get(i));
         }
     }
 

@@ -23,6 +23,8 @@ public class Window implements Runnable {
     private static final int DEFAULT_HEIGHT = 480;
 
     public Window() {
+        glfwDefaultWindowHints();
+        glfwWindowHint(GLFW_RESIZABLE,GLFW_FALSE);
         windowId = glfwCreateWindow(DEFAULT_WIDTH,DEFAULT_HEIGHT,"The Game of Life",NULL,NULL);
         if (windowId == NULL) {
             throw new RuntimeException("fail glfwCreateWindow()");
@@ -57,10 +59,17 @@ public class Window implements Runnable {
         glClearColor(1.0f,1.0f,1.0f,1.0f);
         adjustProjection();
 
+        double lastTime = System.nanoTime();
         while (glfwWindowShouldClose(windowId) == 0) {
+            double time = System.nanoTime();
+
             glClear(GL_COLOR_BUFFER_BIT);
 
             world.render(unitsX,unitsY);
+            if (time - lastTime >= 100000000) {
+                world.playGame();
+                lastTime = time;
+            }
 
             glfwSwapBuffers(windowId);
             glfwPollEvents();

@@ -7,7 +7,7 @@ import java.lang.Math;
 import static org.lwjgl.opengl.GL11.*;
 
 public class World {
-    private double zoom = 20.0; // units in X/Y (i.e. radius) from view location
+    private double zoom = 10.0; // units in X/Y (i.e. radius) from view location
     private double location[] = {0.0,0.0}; // view location
     private ArrayList<BitSet> grid;
 
@@ -53,44 +53,53 @@ public class World {
 
     // render the world given the specified projection space
     public void render(double unitsX,double unitsY) {
-        // compute metrics for the renderable area; the projection
-        // could map a non-square image to the viewport, meaning that
-        // our zoom level may allow different numbers of cells to be
-        // viewable in each direction
-        int upDown = (int)Math.ceil(unitsY / 2.0 * zoom) + 2;
-        int leftRight = (int)Math.ceil(unitsX / 2.0 * zoom) + 2;
-        int across = leftRight * 2;
-        int down = upDown * 2;
-        int startRow = (int)(HALF_DIM + location[1]) - upDown;
-        int startCol = (int)(HALF_DIM + location[0]) - leftRight;
+        // compute number of units from origin to sides; this accounts
+        // for the distortion of the projection space
+        double lx, ly;
+        lx = unitsX / 2.0 * zoom + 2;
+        ly = unitsY / 2.0 * zoom + 2;
 
-        // scale the view to fit the desired zoom level
+        // find the bounds of the viewable grid portion; some m
+        int startCol, endCol, startRow, endRow;
+        startCol = (int)(HALF_DIM + location[0] - lx);
+        startRow = (int)(HALF_DIM + location[1] - ly);
+        endCol = (int)(startCol + lx*2.0);
+        endRow = (int)(startRow + ly*2.0);
+        if (startCol < 0)
+            startCol = 0;
+        if (endCol > DIM)
+            endCol = DIM;
+        if (startRow < 0)
+            startRow = 0;
+        if (endRow > DIM)
+            endRow = DIM;
+
+        // find the start coordinates of the upper-left of the grid
+        // portion by offsetting from the minimum position
+        double sx, sy;
+        sx = MIN_P + startCol;
+        sy = MIN_P + startRow;
+
+        // scale the view to fit the desired zoom level; adjust up by
+        // 0.5 to account for one-half of a cell
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         glScaled(1/zoom,1/zoom,1.0);
-        glTranslated(-(location[0] - (int)Math.floor(location[0])),location[1] - (int)Math.floor(location[1]),0.0);
-
-        // draw background for dead cells; it must be one-half-cell
-        // width greater in each dimension (0.5)
-        double x1, y1;
-        x1 = -(leftRight + 0.5);
-        y1 = upDown + 0.5;
-        glColor3d(1.0,1.0,1.0);
-        rectangle(x1,y1,x1+across+0.5,y1-down-0.5);
+        glTranslated(-location[0],-location[1] + 0.5,0.0);
         glColor3d(0.0,0.0,0.0);
 
-        double cy = upDown;
-        for (int i = 0,r = startRow;i < down;++i,++r) {
-            if (r >= 0 && r < grid.size()) {
-                BitSet row = grid.get(r);
-                double cx = -(leftRight);
-                for (int j = 0,c = startCol;j < across;++j,++c) {
-                    if (c >= 0 && c < row.length() && row.get(c))
-                        renderCell(cx,cy);
-                    cx += 1.0;
-                }
+        // render cells: we just draw the viewable portion of the grid
+        // for efficiency
+        double cy = sy;
+        for (int i = startRow;i < endRow;++i) {
+            BitSet row = grid.get(i);
+            double cx = sx;
+            for (int j = startCol;j < endCol;++j) {
+                if (row.get(j))
+                    renderCell(cx,cy);
+                cx += 1.0;
             }
-            cy -= 1.0;
+            cy += 1.0;
         }
     }
 

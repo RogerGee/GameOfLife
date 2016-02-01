@@ -45,7 +45,7 @@ public class Window implements Runnable {
         glfwMakeContextCurrent(windowId);
         GL.createCapabilities();
         glfwSwapInterval(1);
-        glClearColor(0.0f,0.01f,0.01f,0.0f);
+        glClearColor(1.0f,1.0f,1.0f,1.0f);
         adjustProjection();
 
         while (glfwWindowShouldClose(windowId) == 0) {
@@ -89,7 +89,7 @@ public class Window implements Runnable {
                 lastY = ypos;
             }
             else {
-                world.adjustView(-(xpos-lastX) * unitsX / windowWidth,-(ypos-lastY) * unitsY / windowHeight);
+                world.adjustView(-(xpos-lastX) * unitsX / windowWidth,(ypos-lastY) * unitsY / windowHeight);
                 lastX = xpos;
                 lastY = ypos;
             }

@@ -87,7 +87,7 @@ public class World {
             grid.add(new BitSet(DIM));
             tmpGrid.add(new BitSet(DIM));
         }
-        for (int i = 0;i < subset.size();++i) {
+        for (int i = subset.size()-1;i >= 0;--i) { // subset has rows in backwards
             grid.add(subset.get(i));
             tmpGrid.add((BitSet)subset.get(i).clone());
         }

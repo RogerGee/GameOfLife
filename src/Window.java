@@ -18,6 +18,8 @@ public class Window implements Runnable {
     private World world;
     private GLFWCursorPosCallback cbCurPos;
     private GLFWScrollCallback cbCurScroll;
+    private GLFWKeyCallback cbKeyPress;
+    private boolean pauseGame = false;
 
     private static final double DIM = 2;
     private static final int DEFAULT_WIDTH = 640;
@@ -56,6 +58,14 @@ public class Window implements Runnable {
                 }
             };
         glfwSetScrollCallback(windowId,cbCurScroll);
+
+        cbKeyPress = new GLFWKeyCallback() {
+                @Override
+                public void invoke(long window,int key,int scancode,int action,int mods) {
+                    onKeyPress(window,key,scancode,action,mods);
+                }
+            };
+        glfwSetKeyCallback(windowId,cbKeyPress);
     }
 
     // main drawing loop: assume this is called uniquely per each
@@ -76,7 +86,7 @@ public class Window implements Runnable {
             glClear(GL_COLOR_BUFFER_BIT);
 
             world.render(unitsX,unitsY);
-            if (time - lastTime >= 100000000) {
+            if (time - lastTime >= 100000000 && !pauseGame) {
                 world.playGame();
                 lastTime = time;
             }
@@ -132,5 +142,11 @@ public class Window implements Runnable {
         // negate offset so negative scrolls scroll out; this is
         // simply a preference
         world.adjustZoom(-yoffset);
+    }
+
+    private void onKeyPress(long window,int key,int scancode,int action,int mods) {
+        if (key == GLFW_KEY_P && action == GLFW_RELEASE) {
+            pauseGame = !pauseGame;
+        }
     }
 }

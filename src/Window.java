@@ -1,6 +1,7 @@
 // Window.java
 
 import java.nio.IntBuffer;
+import java.io.*;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -14,7 +15,7 @@ public class Window implements Runnable {
     private long windowHeight;
     private double unitsX; // units in horizontile projection space
     private double unitsY; // units in vertical projection space
-    private World world = new World();
+    private World world;
     private GLFWCursorPosCallback cbCurPos;
     private GLFWScrollCallback cbCurScroll;
 
@@ -22,7 +23,16 @@ public class Window implements Runnable {
     private static final int DEFAULT_WIDTH = 640;
     private static final int DEFAULT_HEIGHT = 480;
 
-    public Window() {
+    public Window(String file) throws FileNotFoundException,IOException {
+        // create the world object; pass it a file reader if the
+        // initial game state is to be taken from a file
+        if (file == null)
+            world = new World();
+        else {
+            FileReader reader = new FileReader(file);
+            world = new World(reader);
+        }
+
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_RESIZABLE,GLFW_FALSE);
         windowId = glfwCreateWindow(DEFAULT_WIDTH,DEFAULT_HEIGHT,"The Game of Life",NULL,NULL);

@@ -1,5 +1,6 @@
 // GameOfLife.java
 
+import java.io.*;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class GameOfLife
@@ -17,8 +18,16 @@ public class GameOfLife
         }
 
         // create and run a window instance
-        Window w = new Window();
-        w.run();
+        try {
+            Window w = new Window(args.length < 1 ? null : args[0]);
+            w.run();
+        } catch (FileNotFoundException ex) {
+            System.err.println("file wasn't found: " + ex.getMessage());
+            System.exit(1);
+        } catch (IOException ex) {
+            System.err.println("an error occured reading the file: " + ex.getMessage());
+            System.exit(1);
+        }
 
         glfwTerminate();
     }

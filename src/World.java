@@ -4,6 +4,7 @@ import java.util.BitSet;
 import java.util.ArrayList;
 import java.util.Random;
 import java.lang.Math;
+import java.io.*;
 import static org.lwjgl.opengl.GL11.*;
 
 public class World {
@@ -36,6 +37,63 @@ public class World {
             BitSet bs = BitSet.valueOf(rbytes);
             grid.add(bs);
             tmpGrid.add((BitSet)bs.clone());
+        }
+    }
+
+    public World(FileReader reader) throws IOException {
+        BufferedReader input = new BufferedReader(reader);
+        ArrayList<BitSet> subset = new ArrayList<BitSet>();
+
+        // read the data from the file which will represent a subset
+        // of the overall grid
+        int rcount = 0;
+        while (rcount < DIM) {
+            String line = input.readLine();
+            if (line == null)
+                break;
+
+            // create a row bitset for the input line
+            int ii;
+            int startCol, endCol;
+            BitSet row = new BitSet(DIM);
+            startCol = (int)(HALF_DIM - line.length() / 2);
+            endCol = startCol + line.length();
+            ii = 0;
+
+            // make sure the columns can fit on the row; if it exceeds
+            // the row then we can display only a part of it
+            if (startCol < 0) {
+                ii += -startCol;
+                endCol += startCol;
+                startCol = 0;
+            }
+
+            // all non-spaces get bits set to one on the row
+            for (int i = ii;startCol < endCol;++startCol,++i) {
+                if (line.charAt(i) != ' ' && line.charAt(i) != '.')
+                    row.set(startCol);
+            }
+
+            subset.add(row);
+            rcount += 1;
+        }
+
+        // place the subset into the overall grid
+        int before;
+        grid = new ArrayList<BitSet>();
+        tmpGrid = new ArrayList<BitSet>();
+        before = (int)Math.ceil((DIM - rcount) / 2.0);
+        for (int i = 0;i < before;++i,++rcount) {
+            grid.add(new BitSet(DIM));
+            tmpGrid.add(new BitSet(DIM));
+        }
+        for (int i = 0;i < subset.size();++i) {
+            grid.add(subset.get(i));
+            tmpGrid.add((BitSet)subset.get(i).clone());
+        }
+        for (;rcount < DIM;++rcount) {
+            grid.add(new BitSet(DIM));
+            tmpGrid.add(new BitSet(DIM));
         }
     }
 

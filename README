@@ -1,4 +1,36 @@
 Game of Life
 --------------------------------------------------------------------------------
 
-This project is a graphical implementation of the Game of Life in Java.
+This project is a graphical implementation of the Game of Life in Java. It
+targets OpenGL using LWJGL.
+--------------------------------------------------------------------------------
+Building and running
+
+To build, compile each class with the lwjgl.jar file in the class-path. By
+default, the code will set the library-path property of lwjgl to a native/
+directory, which should hold the native shared libraries for lwjgl. You may
+change this in case you have the library installed on your system somewhere
+else.
+
+A manifest file is provided (GameOfLife.mf) that can be used for making a jar
+file. You should include lwjgl.jar and the native libraries alongside this jar
+file.
+
+To run the program, run the GameOfLife class, or the jar file you created. Make
+sure it can find lwjgl.jar and the native libraries.
+--------------------------------------------------------------------------------
+Controls
+
+    Scrolling: use the mouse wheel to scroll
+
+    Translating: to translate the world view, left-click the screen and drag
+
+    Pause: press the P-key to toggle pause
+--------------------------------------------------------------------------------
+Patterns
+
+This repository contains a directory of pattern files. Pattern files specify
+initial game states to load. Each line in the pattern file is mapped to the
+center of the game board. So you need to pad each line with spaces (' ' or '.')
+to ensure that everything matches up. The software tries to fit your input into
+the center of the board (in both dimensions).

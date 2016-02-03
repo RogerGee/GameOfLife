@@ -35,7 +35,7 @@ public class GameOfLife
     // evaluate a single conway instance; 'state' is interpreted as a
     // grid of 9 cells with the center cell being evaluated
     public static boolean gameStep(boolean[] state) {
-        // count neighbors
+        // count alive neighbors
         int no = 0;
         for (int i = 0;i < 9;++i) {
             if (i != 4) {

@@ -9,7 +9,7 @@ public class GameOfLife
     {
         // we require native library dependencies; tell the JVM where
         // to find these
-        System.setProperty("org.lwjgl.librarypath","native");
+        System.setProperty("org.lwjgl.librarypath","natives");
 
         // initialize the graphics library
         if (glfwInit() == 0) {

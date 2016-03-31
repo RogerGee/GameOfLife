@@ -124,7 +124,7 @@ public class World {
         lx = unitsX / 2.0 * zoom + 2;
         ly = unitsY / 2.0 * zoom + 2;
 
-        // find the bounds of the viewable grid portion; some m
+        // find the bounds of the viewable grid portion
         int startCol, endCol, startRow, endRow;
         startCol = (int)(HALF_DIM + location[0] - lx);
         startRow = (int)(HALF_DIM + location[1] - ly);

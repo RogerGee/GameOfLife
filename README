@@ -7,14 +7,18 @@ targets OpenGL using LWJGL.
 Building and running
 
 To build, compile each class with the lwjgl.jar file in the class-path. By
-default, the code will set the library-path property of lwjgl to a native/
+default, the code will set the library-path property of lwjgl to a natives/
 directory, which should hold the native shared libraries for lwjgl. You may
 change this in case you have the library installed on your system somewhere
 else.
 
 A manifest file is provided (GameOfLife.mf) that can be used for making a jar
-file. You should include lwjgl.jar and the native libraries alongside this jar
-file.
+file. You should include a natives/ subdirectory inside this jar file that
+contains the platform-dependent native shared libraries for lwjgl. Alongside
+the resulting jar file include the lwjgl.jar file.
+
+An ant build file has been included to simplify this process. This configuration
+expects the lwjgl.jar file to be under a lib/ directory.
 
 To run the program, run the GameOfLife class, or the jar file you created. Make
 sure it can find lwjgl.jar and the native libraries.

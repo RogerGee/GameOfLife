@@ -1,2 +1,5 @@
 GameOfLife/
-native
+natives
+lib
+build/
+*.jar
